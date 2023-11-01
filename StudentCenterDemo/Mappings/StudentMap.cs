@@ -1,5 +1,4 @@
 ﻿using FluentNHibernate.Mapping;
-using StudentCenterDemo.Models;
 
 namespace StudentCenterDemo.Mappings
 {
@@ -7,11 +6,14 @@ namespace StudentCenterDemo.Mappings
     {
         public StudentMap()
         {
-            Table("Student"); // Set the name of the database table
-
-            Id(x => x.Id, "Id").GeneratedBy.Identity();
+            Table("Student");
+            Id(x => x.StudentId);
             Map(x => x.FirstName);
             Map(x => x.LastName);
+            HasMany(x => x.Grades)
+                .KeyColumn("StudentId")
+                .Inverse()
+                .Cascade.All();
         }
     }
 }

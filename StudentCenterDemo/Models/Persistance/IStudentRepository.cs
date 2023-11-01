@@ -5,7 +5,7 @@
         Student Get(int studentId);
         IEnumerable<Student> GetAll();
         Student Add(Student student);
-        bool Update(Student student);
-        void Delete(int id);
+        Student Update(Student student);
+        void Delete(int studentId);
     }
 }

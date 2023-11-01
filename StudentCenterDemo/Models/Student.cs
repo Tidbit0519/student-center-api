@@ -1,15 +1,22 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace StudentCenterDemo.Models
+﻿using System.Text.Json.Serialization;
+public class Student
 {
-    public class Student
-    {
-        public virtual int Id { get; set; }
-        [Required]
-        public virtual string FirstName { get; set; }
-        [Required]
-        public virtual string LastName { get; set; }
-        // Add other properties as needed
-    }
+    public virtual int StudentId { get; protected set; }
+    public virtual string? FirstName { get; set; }
+    public virtual string? LastName { get; set; }
+    [JsonIgnore]
+    public virtual ICollection<Grade>? Grades { get; set; }
+}
+
+public class StudentDTOWithId
+{
+    public int StudentId { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+}
+
+public class StudentDTO
+{
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
 }

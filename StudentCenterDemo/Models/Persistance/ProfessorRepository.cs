@@ -1,6 +1,4 @@
-﻿
-
-using StudentCenterDemo.Models.Persistence;
+﻿using StudentCenterDemo.Models.Persistence;
 
 namespace StudentCenterDemo.Models.Persistance
 {
@@ -13,36 +11,9 @@ namespace StudentCenterDemo.Models.Persistance
             _session = session;
         }
 
-        public Professor Add(Professor professor)
-        {
-            using var transaction = _session.BeginTransaction();
-            try
-            {
-                _session.Save(professor);
-                transaction.Commit();
-                return professor;
-            }
-            catch (Exception)
-            {
-                transaction.Rollback();
-                throw; // You can handle the exception as needed
-            }
-        }
-
-        public void Delete(int professorId)
-        {
-            using var transaction = _session.BeginTransaction();
-            var professor = _session.Get<Professor>(professorId);
-            if (professor != null)
-            {
-                _session.Delete(professor);
-                transaction.Commit();
-            }
-        }
-
         public Professor Get(int professorId)
         {
-            return _session.Get<Professor>(professorId);
+            return _session.Query<Professor>().FirstOrDefault(s => s.ProfessorId == professorId);
         }
 
         public IEnumerable<Professor> GetAll()
@@ -50,21 +21,31 @@ namespace StudentCenterDemo.Models.Persistance
             return _session.Query<Professor>().ToList();
         }
 
-        public bool Update(Professor professor)
+        public Professor Add(Professor professor)
         {
             using var transaction = _session.BeginTransaction();
-            try
+            _session.Save(professor);
+            transaction.Commit();
+            return professor;
+        }
+
+        public Professor Update(Professor professor)
+        {
+            using var transaction = _session.BeginTransaction();
+            _session.Update(professor);
+            transaction.Commit();
+            return professor;
+        }
+
+        public void Delete(int professorId)
+        {
+            using var transaction = _session.BeginTransaction();
+            var professor = Get(professorId);
+            if (professor != null)
             {
-                _session.Clear();
-                _session.Update(professor);
-                transaction.Commit();
-                return true;
+                _session.Delete(professor);
             }
-            catch (Exception)
-            {
-                transaction.Rollback();
-                return false;
-            }
+            transaction.Commit();
         }
     }
 }

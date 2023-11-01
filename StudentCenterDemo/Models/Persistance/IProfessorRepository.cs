@@ -5,7 +5,7 @@
         Professor Get(int professorId);
         IEnumerable<Professor> GetAll();
         Professor Add(Professor professor);
-        bool Update(Professor professor);
+        Professor Update(Professor professor);
         void Delete(int professorId);
     }
 }

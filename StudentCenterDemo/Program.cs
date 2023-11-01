@@ -13,7 +13,7 @@ namespace StudentCenterDemo
             IStudentRepository studentRepository = new StudentRepository(nhHelper.OpenSession());
             IProfessorRepository professorRepository = new ProfessorRepository(nhHelper.OpenSession());
             ICourseRepository courseRepository = new CourseRepository(nhHelper.OpenSession());
-            IEnrollmentRepository enrollmentRepository = new EnrollmentRepository(nhHelper.OpenSession());
+            IGradeRepository gradeRepository = new GradeRepository(nhHelper.OpenSession());
 
             var builder = WebApplication.CreateBuilder(args);
 
@@ -25,9 +25,8 @@ namespace StudentCenterDemo
             });
 
             builder.Services.AddScoped<IStudentRepository, StudentRepository>();
-            builder.Services.AddScoped<IStudentRepository, StudentRepository>();
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-            builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+            builder.Services.AddScoped<IGradeRepository, GradeRepository>();
             builder.Services.AddScoped<IProfessorRepository, ProfessorRepository>();
 
             builder.Services.AddControllers();

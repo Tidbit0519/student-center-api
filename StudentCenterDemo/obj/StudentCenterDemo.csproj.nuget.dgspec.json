@@ -48,6 +48,10 @@
               "target": "Package",
               "version": "[7.0.11, )"
             },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.0.12, )"
+            },
             "NHibernate": {
               "target": "Package",
               "version": "[5.4.6, )"

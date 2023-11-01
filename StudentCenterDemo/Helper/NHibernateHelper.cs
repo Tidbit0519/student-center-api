@@ -21,7 +21,7 @@ namespace StudentCenterDemo.Helper
 
             _sessionFactory = Fluently.Configure()
                 .Database(MsSqlConfiguration.MsSql2012.ConnectionString(connectionString).ShowSql())
-                .Mappings(m => m.FluentMappings.AddFromAssemblyOf<Course>())
+                .Mappings(m => m.FluentMappings.AddFromAssemblyOf<Professor>())
                 .ExposeConfiguration(cfg => new SchemaExport(cfg).Create(false, false))
                 .BuildSessionFactory();
 

@@ -1,91 +1,108 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StudentCenterDemo.Models;
 using StudentCenterDemo.Models.Persistance;
 using StudentCenterDemo.Models.Persistence;
 
-namespace StudentCenterDemo.Controllers
+namespace WebAPI.Controllers
 {
-    [Route("api/courses")]
+    [Route("api/[controller]")]
     [ApiController]
     public class CourseController : ControllerBase
     {
         private readonly ICourseRepository _courseRepository;
+        private readonly IProfessorRepository _professorRepository;
 
-        public CourseController(ICourseRepository courseRepository)
+        public CourseController(ICourseRepository courseRepository, IProfessorRepository professorRepository)
         {
             _courseRepository = courseRepository;
+            _professorRepository = professorRepository;
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<Course> Get(int id)
+        [HttpGet("GetAllCourses")]
+        public ActionResult<IEnumerable<CourseDTOWithId>> Get()
+        {
+            var courses = _courseRepository.GetAll();
+            var courseDTOs = courses.Select(course => new CourseDTOWithId
+            {
+                CourseId = course.CourseId,
+                CourseName = course.CourseName,
+                CourseCode = course.CourseCode,
+                Credits = course.Credits,
+                ProfessorId = course.ProfessorId
+            }).ToList();
+            return Ok(courseDTOs);
+        }
+
+        [HttpGet("GetCourseById/{id}")]
+        public ActionResult<CourseDTO> Get(int id)
         {
             var course = _courseRepository.Get(id);
             if (course == null)
-                return NotFound();
-
+                return NotFound(); // Return 404 Not Found for non-existent courses
             return Ok(course);
         }
 
-        [HttpGet("getAllCourses")]
-        public ActionResult<IEnumerable<Course>> GetAll()
+        [HttpPost("CreateNewCourse")]
+        public ActionResult<IEnumerable<CourseDTO>> Post([FromBody] IList<CourseDTO> courses)
         {
-            var courses = _courseRepository.GetAll();
-            return Ok(courses);
-        }
-
-        [HttpPost]
-        public IActionResult Post([FromBody] List<Course> courses)
-        {
-            if (courses == null || courses.Count == 0)
+            if (courses == null || !courses.Any())
             {
-                return BadRequest("No course data received.");
+                return BadRequest("Invalid course data"); // Return 400 Bad Request for invalid data
             }
 
-            try
+            var createdCourses = new List<CourseDTO>();
+
+            foreach (var course in courses)
             {
-                foreach (var item in courses)
+                if (_professorRepository.Get((int)course.ProfessorId) == null)
                 {
-                    var course = new Course
-                    {
-                        Name = item.Name,
-                        Code = item.Code,
-                        Credits = item.Credits,
-                        ProfessorId = item.ProfessorId,
-                    };
-
-                    _courseRepository.Add(course);
+                    return BadRequest("Invalid ProfessorId"); // Return 400 Bad Request for invalid ProfessorId
                 }
-                return Ok("Courses added successfully.");
+
+                var newCourse = new Course
+                {
+                    CourseName = course.CourseName,
+                    CourseCode = course.CourseCode,
+                    Credits = course.Credits,
+                    ProfessorId = course.ProfessorId,
+                };
+
+                _courseRepository.Add(newCourse);
+                createdCourses.Add(course);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+
+            return CreatedAtAction("GetAllCourses", createdCourses); // Return 201 Created with a link to the newly created resources
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Course course)
+        [HttpPut("UpdateCourseById/{id}")]
+        public ActionResult<Course> Put(int id, Course updatedCourse)
         {
-            if (course == null || id != course.Id)
-                return BadRequest();
-
             var existingCourse = _courseRepository.Get(id);
             if (existingCourse == null)
-                return NotFound();
+                return NotFound(); // Return 404 Not Found for non-existent courses
 
-            _courseRepository.Update(course);
-            return NoContent();
+            if (_professorRepository.Get((int)updatedCourse.ProfessorId) == null)
+            {
+                return BadRequest("Invalid ProfessorId"); // Return 400 Bad Request for invalid ProfessorId
+            }
+
+            existingCourse.CourseName = updatedCourse.CourseName;
+            existingCourse.CourseCode = updatedCourse.CourseCode;
+            existingCourse.Credits = updatedCourse.Credits;
+            existingCourse.ProfessorId = updatedCourse.ProfessorId;
+
+            _courseRepository.Update(existingCourse);
+            return Ok(existingCourse);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [HttpDelete("DeleteCourseById/{id}")]
+        public ActionResult Delete(int id)
         {
             var course = _courseRepository.Get(id);
             if (course == null)
-                return NotFound();
+                return NotFound(); // Return 404 Not Found for non-existent courses
 
             _courseRepository.Delete(id);
-            return NoContent();
+            return NoContent(); // Return 204 No Content to indicate successful deletion
         }
     }
 }
