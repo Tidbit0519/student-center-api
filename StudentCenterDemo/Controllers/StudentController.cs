@@ -87,7 +87,7 @@ namespace WebAPI.Controllers
                 createdStudents.Add(studentDTO);
             }
 
-            return CreatedAtAction("GetStudentById", createdStudents);
+            return Ok(createdStudents);
         }
 
         [HttpPut("UpdateStudentById/{id}")]

@@ -17,10 +17,15 @@ namespace StudentCenterDemo.Helper
 
         private void CreateSessionFactory()
         {
-            string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=StudentCenterDemoDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;";
+            var connectionString = "Server=eis-learning.mysql.database.azure.com;"
+                     + "Database=defaultdb;"
+                     + "Uid=jtbt1999;"
+                     + "Pwd=Jason@990519;"
+                     + "SslMode=Required;"
+                     + "CertificateFile=C:\\Users\\jtbt1999\\Desktop\\dev\\StudentCenterDemo\\StudentCenterDemo;";
 
             _sessionFactory = Fluently.Configure()
-                .Database(MsSqlConfiguration.MsSql2012.ConnectionString(connectionString).ShowSql())
+                .Database(MySQLConfiguration.Standard.ConnectionString(connectionString).ShowSql())
                 .Mappings(m => m.FluentMappings.AddFromAssemblyOf<Professor>())
                 .ExposeConfiguration(cfg => new SchemaExport(cfg).Create(false, false))
                 .BuildSessionFactory();
