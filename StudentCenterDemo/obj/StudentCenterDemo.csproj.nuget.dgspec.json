@@ -52,14 +52,6 @@
               "target": "Package",
               "version": "[7.0.12, )"
             },
-            "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
-              "target": "Package",
-              "version": "[1.19.5, )"
-            },
-            "MySql.Data": {
-              "target": "Package",
-              "version": "[8.2.0, )"
-            },
             "NHibernate": {
               "target": "Package",
               "version": "[5.4.6, )"
